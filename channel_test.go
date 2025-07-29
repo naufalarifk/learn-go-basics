@@ -109,3 +109,31 @@ func TestRangeChan(t *testing.T) {
 	fmt.Println("Done!")
 
 }
+
+func TestSelectChannel(t *testing.T) {
+	channel1 := make(chan string)
+	channel2 := make(chan string)
+
+	defer close(channel1)
+	defer close(channel2)
+
+	go GiveMeRes(channel1)
+	go GiveMeRes(channel2)
+	counter := 0
+
+	for {
+		select {
+		case data := <-channel1:
+			fmt.Println("Data from 1", data)
+			counter++
+		case data := <-channel2:
+			fmt.Println("Data from 2", data)
+			counter++
+		default:
+			fmt.Println("Awaiting Data...")
+		}
+		if counter == 2 {
+			break
+		}
+	}
+}
